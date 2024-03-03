@@ -1,6 +1,8 @@
-using Claims.Auditing;
+using ApplicationCore.Entities;
+using Infrastructure.SQLDatabase;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
+using Shared.Enums;
 
 namespace Claims.Controllers;
 
@@ -20,11 +22,12 @@ public class CoversController : ControllerBase
                      ?? throw new ArgumentNullException(nameof(cosmosClient));
     }
     
-    [HttpPost]
+    // TODO: Extract the premium calculation logic to a separate controller.
+    /*[HttpPost]
     public async Task<ActionResult> ComputePremiumAsync(DateOnly startDate, DateOnly endDate, CoverType coverType)
     {
         return Ok(ComputePremium(startDate, endDate, coverType));
-    }
+    }*/
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Cover>>> GetAsync()

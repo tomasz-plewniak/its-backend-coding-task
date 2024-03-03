@@ -1,6 +1,7 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Shared.Enums;
 
-namespace Claims;
+namespace ApplicationCore.Entities;
 
 public class Cover
 {
@@ -18,13 +19,4 @@ public class Cover
 
     [JsonProperty(PropertyName = "premium")]
     public decimal Premium { get; set; }
-}
-
-public enum CoverType
-{
-    Yacht = 0,
-    PassengerShip = 1,
-    ContainerShip = 2,
-    BulkCarrier = 3,
-    Tanker = 4
 }

@@ -1,4 +1,6 @@
-﻿namespace Claims.Auditing
+﻿using ApplicationCore.Entities;
+
+namespace Infrastructure.SQLDatabase
 {
     public class Auditer
     {
