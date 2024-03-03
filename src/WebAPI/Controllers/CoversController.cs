@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 using Shared.Enums;
 
-namespace Claims.Controllers;
+namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]

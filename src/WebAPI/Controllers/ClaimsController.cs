@@ -3,7 +3,7 @@ using Infrastructure;
 using Infrastructure.SQLDatabase;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Claims.Controllers
+namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
