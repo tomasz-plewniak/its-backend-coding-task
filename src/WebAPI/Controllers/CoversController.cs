@@ -1,8 +1,9 @@
-using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
+using AutoMapper;
 using Infrastructure.SQLDatabase;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Cosmos;
+using WebAPI.DTOs;
+using Entities = ApplicationCore.Entities;
 
 namespace WebAPI.Controllers;
 
@@ -13,30 +14,29 @@ public class CoversController : ControllerBase
     private readonly ILogger<CoversController> _logger;
     private readonly IPremiumService _premiumService;
     private readonly ICoverRepository _coverRepository;
+    private readonly IMapper _mapper;
     private readonly Auditer _auditer;
-    private readonly Container _container;
 
     public CoversController(
-        CosmosClient cosmosClient,
         AuditContext auditContext,
         ILogger<CoversController> logger,
         IPremiumService premiumService,
-        ICoverRepository coverRepository)
+        ICoverRepository coverRepository,
+        IMapper mapper)
     {
         _logger = logger;
         _premiumService = premiumService;
         _coverRepository = coverRepository;
+        _mapper = mapper;
         _auditer = new Auditer(auditContext);
-        _container = cosmosClient?.GetContainer("ClaimDb", "Cover")
-                     ?? throw new ArgumentNullException(nameof(cosmosClient));
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Cover>>> GetAsync()
+    public async Task<ActionResult<Cover>> GetAsync()
     {
         var results = await _coverRepository.GetAllAsync();
         
-        return Ok(results);
+        return Ok(_mapper.Map<IEnumerable<Cover>>(results));
     }
 
     [HttpGet("{id}")]
@@ -48,7 +48,7 @@ public class CoversController : ControllerBase
             return NotFound();
         }
         
-        return Ok(response);
+        return Ok(_mapper.Map<Cover>(response));
     }
 
     [HttpPost]
@@ -56,7 +56,7 @@ public class CoversController : ControllerBase
     {
         cover.Id = Guid.NewGuid().ToString();
         cover.Premium = _premiumService.ComputePremium(cover.StartDate, cover.EndDate, cover.Type);
-        await _coverRepository.AddItemAsync(cover);
+        await _coverRepository.AddItemAsync(_mapper.Map<Entities.Cover>(cover));
         _auditer.AuditCover(cover.Id, "POST");
         return Ok(cover);
     }

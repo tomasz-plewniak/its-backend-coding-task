@@ -10,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationCoreServices(builder.Configuration);
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 builder.Services.AddControllers().AddJsonOptions(x =>
     {
         x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
