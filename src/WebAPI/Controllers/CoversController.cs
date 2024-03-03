@@ -1,4 +1,5 @@
 using ApplicationCore.Entities;
+using ApplicationCore.Interfaces;
 using Infrastructure.SQLDatabase;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
@@ -11,12 +12,18 @@ namespace WebAPI.Controllers;
 public class CoversController : ControllerBase
 {
     private readonly ILogger<CoversController> _logger;
+    private readonly IPremiumService _premiumService;
     private readonly Auditer _auditer;
     private readonly Container _container;
 
-    public CoversController(CosmosClient cosmosClient, AuditContext auditContext, ILogger<CoversController> logger)
+    public CoversController(
+        CosmosClient cosmosClient,
+        AuditContext auditContext,
+        ILogger<CoversController> logger,
+        IPremiumService premiumService)
     {
         _logger = logger;
+        _premiumService = premiumService;
         _auditer = new Auditer(auditContext);
         _container = cosmosClient?.GetContainer("ClaimDb", "Cover")
                      ?? throw new ArgumentNullException(nameof(cosmosClient));
@@ -55,7 +62,7 @@ public class CoversController : ControllerBase
     public async Task<ActionResult> CreateAsync(Cover cover)
     {
         cover.Id = Guid.NewGuid().ToString();
-        cover.Premium = ComputePremium(cover.StartDate, cover.EndDate, cover.Type);
+        cover.Premium = _premiumService.ComputePremium(cover.StartDate, cover.EndDate, cover.Type);
         await _container.CreateItemAsync(cover, new PartitionKey(cover.Id));
         _auditer.AuditCover(cover.Id, "POST");
         return Ok(cover);
@@ -66,39 +73,5 @@ public class CoversController : ControllerBase
     {
         _auditer.AuditCover(id, "DELETE");
         return _container.DeleteItemAsync<Cover>(id, new (id));
-    }
-
-    private decimal ComputePremium(DateOnly startDate, DateOnly endDate, CoverType coverType)
-    {
-        var multiplier = 1.3m;
-        if (coverType == CoverType.Yacht)
-        {
-            multiplier = 1.1m;
-        }
-
-        if (coverType == CoverType.PassengerShip)
-        {
-            multiplier = 1.2m;
-        }
-
-        if (coverType == CoverType.Tanker)
-        {
-            multiplier = 1.5m;
-        }
-
-        var premiumPerDay = 1250 * multiplier;
-        var insuranceLength = endDate.DayNumber - startDate.DayNumber;
-        var totalPremium = 0m;
-
-        for (var i = 0; i < insuranceLength; i++)
-        {
-            if (i < 30) totalPremium += premiumPerDay;
-            if (i < 180 && coverType == CoverType.Yacht) totalPremium += premiumPerDay - premiumPerDay * 0.05m;
-            else if (i < 180) totalPremium += premiumPerDay - premiumPerDay * 0.02m;
-            if (i < 365 && coverType != CoverType.Yacht) totalPremium += premiumPerDay - premiumPerDay * 0.03m;
-            else if (i < 365) totalPremium += premiumPerDay - premiumPerDay * 0.08m;
-        }
-
-        return totalPremium;
     }
 }

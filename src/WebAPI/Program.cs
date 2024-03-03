@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using ApplicationCore;
 using Infrastructure;
 using Infrastructure.SQLDatabase;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddApplicationCoreServices(builder.Configuration);
 
 builder.Services.AddControllers().AddJsonOptions(x =>
     {
