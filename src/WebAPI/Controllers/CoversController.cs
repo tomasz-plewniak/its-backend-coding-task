@@ -13,6 +13,7 @@ public class CoversController : ControllerBase
 {
     private readonly ILogger<CoversController> _logger;
     private readonly IPremiumService _premiumService;
+    private readonly ICoverRepository _coverRepository;
     private readonly Auditer _auditer;
     private readonly Container _container;
 
@@ -20,10 +21,12 @@ public class CoversController : ControllerBase
         CosmosClient cosmosClient,
         AuditContext auditContext,
         ILogger<CoversController> logger,
-        IPremiumService premiumService)
+        IPremiumService premiumService,
+        ICoverRepository coverRepository)
     {
         _logger = logger;
         _premiumService = premiumService;
+        _coverRepository = coverRepository;
         _auditer = new Auditer(auditContext);
         _container = cosmosClient?.GetContainer("ClaimDb", "Cover")
                      ?? throw new ArgumentNullException(nameof(cosmosClient));
@@ -32,30 +35,21 @@ public class CoversController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Cover>>> GetAsync()
     {
-        var query = _container.GetItemQueryIterator<Cover>(new QueryDefinition("SELECT * FROM c"));
-        var results = new List<Cover>();
-        while (query.HasMoreResults)
-        {
-            var response = await query.ReadNextAsync();
-
-            results.AddRange(response.ToList());
-        }
-
+        var results = await _coverRepository.GetAllAsync();
+        
         return Ok(results);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Cover>> GetAsync(string id)
     {
-        try
-        {
-            var response = await _container.ReadItemAsync<Cover>(id, new (id));
-            return Ok(response.Resource);
-        }
-        catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        var response = await _coverRepository.GetItemAsync(id);
+        if (response == null)
         {
             return NotFound();
         }
+        
+        return Ok(response);
     }
 
     [HttpPost]
@@ -63,7 +57,7 @@ public class CoversController : ControllerBase
     {
         cover.Id = Guid.NewGuid().ToString();
         cover.Premium = _premiumService.ComputePremium(cover.StartDate, cover.EndDate, cover.Type);
-        await _container.CreateItemAsync(cover, new PartitionKey(cover.Id));
+        await _coverRepository.AddItemAsync(cover);
         _auditer.AuditCover(cover.Id, "POST");
         return Ok(cover);
     }
@@ -72,6 +66,6 @@ public class CoversController : ControllerBase
     public Task DeleteAsync(string id)
     {
         _auditer.AuditCover(id, "DELETE");
-        return _container.DeleteItemAsync<Cover>(id, new (id));
+        return _coverRepository.DeleteItemAsync(id);
     }
 }

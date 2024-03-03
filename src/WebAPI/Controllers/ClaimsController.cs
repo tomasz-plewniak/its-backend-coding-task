@@ -1,4 +1,5 @@
 using ApplicationCore.Entities;
+using ApplicationCore.Interfaces;
 using Infrastructure;
 using Infrastructure.SQLDatabase;
 using Microsoft.AspNetCore.Mvc;
@@ -11,27 +12,30 @@ namespace WebAPI.Controllers
     {
         
         private readonly ILogger<ClaimsController> _logger;
-        private readonly CosmosDbService _cosmosDbService;
+        private readonly IClaimRepository _claimRepository;
         private readonly Auditer _auditer;
 
-        public ClaimsController(ILogger<ClaimsController> logger, CosmosDbService cosmosDbService, AuditContext auditContext)
+        public ClaimsController(
+            ILogger<ClaimsController> logger,
+            AuditContext auditContext,
+            IClaimRepository claimRepository)
         {
             _logger = logger;
-            _cosmosDbService = cosmosDbService;
+            _claimRepository = claimRepository;
             _auditer = new Auditer(auditContext);
         }
 
         [HttpGet]
-        public Task<IEnumerable<Claim>> GetAsync()
+        public async Task<IEnumerable<Claim>> GetAsync()
         {
-            return _cosmosDbService.GetClaimsAsync();
+            return await _claimRepository.GetAllAsync();
         }
 
         [HttpPost]
         public async Task<ActionResult> CreateAsync(Claim claim)
         {
             claim.Id = Guid.NewGuid().ToString();
-            await _cosmosDbService.AddItemAsync(claim);
+            await _claimRepository.AddItemAsync(claim);
             _auditer.AuditClaim(claim.Id, "POST");
             return Ok(claim);
         }
@@ -40,13 +44,13 @@ namespace WebAPI.Controllers
         public Task DeleteAsync(string id)
         {
             _auditer.AuditClaim(id, "DELETE");
-            return _cosmosDbService.DeleteItemAsync(id);
+            return _claimRepository.DeleteItemAsync(id);
         }
 
         [HttpGet("{id}")]
         public Task<Claim> GetAsync(string id)
         {
-            return _cosmosDbService.GetClaimAsync(id);
+            return _claimRepository.GetItemAsync(id);
         }
     }
 }
