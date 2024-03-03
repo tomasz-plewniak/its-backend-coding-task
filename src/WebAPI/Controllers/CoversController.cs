@@ -21,13 +21,6 @@ public class CoversController : ControllerBase
         _container = cosmosClient?.GetContainer("ClaimDb", "Cover")
                      ?? throw new ArgumentNullException(nameof(cosmosClient));
     }
-    
-    // TODO: Extract the premium calculation logic to a separate controller.
-    /*[HttpPost]
-    public async Task<ActionResult> ComputePremiumAsync(DateOnly startDate, DateOnly endDate, CoverType coverType)
-    {
-        return Ok(ComputePremium(startDate, endDate, coverType));
-    }*/
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Cover>>> GetAsync()
