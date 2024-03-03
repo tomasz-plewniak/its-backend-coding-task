@@ -3,11 +3,8 @@ using Shared.Enums;
 
 namespace ApplicationCore.Entities;
 
-public class Cover
+public class Cover : Entity
 {
-    [JsonProperty(PropertyName = "id")]
-    public string Id { get; set; }
-
     [JsonProperty(PropertyName = "startDate")]
     public DateOnly StartDate { get; set; }
     

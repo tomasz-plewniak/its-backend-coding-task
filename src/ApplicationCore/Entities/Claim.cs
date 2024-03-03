@@ -3,11 +3,8 @@ using Shared.Enums;
 
 namespace ApplicationCore.Entities;
 
-public class Claim
+public class Claim : Entity
 {
-    [JsonProperty(PropertyName = "id")]
-    public string Id { get; set; }
-        
     [JsonProperty(PropertyName = "coverId")]
     public string CoverId { get; set; }
 
