@@ -1,4 +1,7 @@
-﻿using Infrastructure.SQLDatabase;
+﻿using ApplicationCore.Interfaces;
+using Infrastructure.CosmosDB;
+using Infrastructure.SQLDatabase;
+using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,31 +10,47 @@ namespace Infrastructure;
 
 public static class ConfigureServices
 {
+    private const string CosmosDbSection = "CosmosDb";
+    private const string DefaultConnection = "DefaultConnection";
+    private const string Account = "Account";
+    private const string Key = "Key";
+    
+    private const string DatabaseId = "ClaimDb";
+    private const string ClaimContainerName = "Claim";
+    private const string CoverContainerName = "Cover";
+    private const string PartitionKey = "/id";
+    
     public static IServiceCollection AddInfrastructureServices(
         this IServiceCollection services,
         IConfiguration configuration)
     {
         services.AddSingleton(
-            InitializeCosmosClientInstanceAsync(configuration.GetSection("CosmosDb")).GetAwaiter().GetResult());
+            InitializeCosmosClientInstanceAsync(configuration.GetSection(CosmosDbSection)).GetAwaiter().GetResult());
         
         services.AddDbContext<AuditContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+            options.UseSqlServer(configuration.GetConnectionString(DefaultConnection),
                 builder => builder.MigrationsAssembly(typeof(AuditContext).Assembly.FullName)));
-
+        
+        services
+            .AddTransient<IClaimRepository, ClaimRepository>();
+        
+        services
+            .AddTransient<ICoverRepository, CoverRepository>();
+        
         return services;
     }
     
-    static async Task<CosmosDbService> InitializeCosmosClientInstanceAsync(IConfigurationSection configurationSection)
+    static async Task<CosmosClient> InitializeCosmosClientInstanceAsync(IConfigurationSection configurationSection)
     {
-        string databaseName = configurationSection.GetSection("DatabaseName").Value;
-        string containerName = configurationSection.GetSection("ContainerName").Value;
-        string account = configurationSection.GetSection("Account").Value;
-        string key = configurationSection.GetSection("Key").Value;
-        Microsoft.Azure.Cosmos.CosmosClient client = new Microsoft.Azure.Cosmos.CosmosClient(account, key);
-        CosmosDbService cosmosDbService = new CosmosDbService(client, databaseName, containerName);
-        Microsoft.Azure.Cosmos.DatabaseResponse database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
-        await database.Database.CreateContainerIfNotExistsAsync(containerName, "/id");
+        string account = configurationSection.GetSection(Account).Value;
+        string key = configurationSection.GetSection(Key).Value;
+        
+        var client = new CosmosClient(account, key);
+        
+        var database = await client.CreateDatabaseIfNotExistsAsync(DatabaseId);
+        await database.Database.CreateContainerIfNotExistsAsync(ClaimContainerName, PartitionKey);
+        await database.Database.CreateContainerIfNotExistsAsync(CoverContainerName, PartitionKey);
 
-        return cosmosDbService;
+        return client;
     }
 }

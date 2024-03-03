@@ -3,7 +3,6 @@ using ApplicationCore.Interfaces;
 using Infrastructure.SQLDatabase;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
-using Shared.Enums;
 
 namespace WebAPI.Controllers;
 

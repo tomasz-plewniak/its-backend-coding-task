@@ -19,11 +19,6 @@ public abstract class GenericRepository<TEntity> : IGenericRepository<TEntity>
         _container = cosmosClient.GetContainer(DatabaseId, ContainerId);
     }
 
-    public void Dispose()
-    {
-        _cosmosClient?.Dispose();
-    }
-
     public async Task<IEnumerable<TEntity>> GetAllAsync()
     {
         var query = _container.GetItemQueryIterator<TEntity>(new QueryDefinition("SELECT * FROM c"));

@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Interfaces;
 
-public interface IGenericRepository<TEntity> : IDisposable
+public interface IGenericRepository<TEntity>
     where TEntity : Entity
 {
     string DatabaseId { get; }

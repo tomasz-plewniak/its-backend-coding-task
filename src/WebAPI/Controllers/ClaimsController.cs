@@ -1,6 +1,5 @@
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
-using Infrastructure;
 using Infrastructure.SQLDatabase;
 using Microsoft.AspNetCore.Mvc;
 
