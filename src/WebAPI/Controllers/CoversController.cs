@@ -34,7 +34,6 @@ public class CoversController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Cover>>> GetAsync(CancellationToken cancellationToken = default)
     {
-
         var results = await _mediator.Send(new GetAllCoversQuery(), cancellationToken);
         
         return Ok(_mapper.Map<IEnumerable<Cover>>(results));
