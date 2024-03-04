@@ -16,7 +16,7 @@ builder.Services.AddApplicationCoreServices(builder.Configuration);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<IValidator<Claim>, ClaimValidator>();
-//builder.Services.AddTransient<IValidator<Cover>, CoverValidator>();
+builder.Services.AddScoped<IValidator<Cover>, CoverValidator>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(x =>
