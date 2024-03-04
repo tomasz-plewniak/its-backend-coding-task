@@ -1,8 +1,11 @@
 using System.Text.Json.Serialization;
 using ApplicationCore;
+using FluentValidation;
 using Infrastructure;
 using Infrastructure.SQLDatabase;
 using Microsoft.EntityFrameworkCore;
+using WebAPI.DTOs;
+using WebAPI.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +15,14 @@ builder.Services.AddApplicationCoreServices(builder.Configuration);
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddControllers().AddJsonOptions(x =>
+builder.Services.AddScoped<IValidator<Claim>, ClaimValidator>();
+builder.Services.AddScoped<IValidator<Cover>, CoverValidator>();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(x =>
     {
         x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    }
-);
+    });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

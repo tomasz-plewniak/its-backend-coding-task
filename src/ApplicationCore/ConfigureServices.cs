@@ -11,8 +11,9 @@ public static class ConfigureServices
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddTransient<IPremiumService, PremiumService>(); 
-
+        services.AddTransient<IPremiumService, PremiumService>();
+        services.AddTransient<IDateTimeService, DateTimeService>();
+        
         return services;
     }
 }

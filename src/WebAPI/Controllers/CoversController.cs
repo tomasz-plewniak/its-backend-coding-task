@@ -1,5 +1,7 @@
 using ApplicationCore.Interfaces;
 using AutoMapper;
+using FluentValidation;
+using FluentValidation.Results;
 using Infrastructure.SQLDatabase;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.DTOs;
@@ -15,6 +17,7 @@ public class CoversController : ControllerBase
     private readonly IPremiumService _premiumService;
     private readonly ICoverRepository _coverRepository;
     private readonly IMapper _mapper;
+    private readonly IValidator<Cover> _coverValidator;
     private readonly Auditer _auditer;
 
     public CoversController(
@@ -22,12 +25,14 @@ public class CoversController : ControllerBase
         ILogger<CoversController> logger,
         IPremiumService premiumService,
         ICoverRepository coverRepository,
-        IMapper mapper)
+        IMapper mapper,
+        IValidator<Cover> coverValidator)
     {
         _logger = logger;
         _premiumService = premiumService;
         _coverRepository = coverRepository;
         _mapper = mapper;
+        _coverValidator = coverValidator;
         _auditer = new Auditer(auditContext);
     }
 
@@ -54,6 +59,13 @@ public class CoversController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> CreateAsync(Cover cover)
     {
+        ValidationResult result = await _coverValidator.ValidateAsync(cover);
+
+        if (result.IsValid == false)
+        {
+            return BadRequest(result.Errors.Select(x => x.ErrorMessage).ToList());
+        }
+        
         cover.Id = Guid.NewGuid().ToString();
         cover.Premium = _premiumService.ComputePremium(cover.StartDate, cover.EndDate, cover.Type);
         await _coverRepository.AddItemAsync(_mapper.Map<Entities.Cover>(cover));
