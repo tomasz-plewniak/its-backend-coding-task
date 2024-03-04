@@ -32,18 +32,18 @@ public class CoversController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Cover>>> GetAsync()
+    public async Task<ActionResult<IEnumerable<Cover>>> GetAsync(CancellationToken cancellationToken = default)
     {
 
-        var results = await _mediator.Send(new GetAllCoversQuery());
+        var results = await _mediator.Send(new GetAllCoversQuery(), cancellationToken);
         
         return Ok(_mapper.Map<IEnumerable<Cover>>(results));
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Cover>> GetAsync(string id)
+    public async Task<ActionResult<Cover>> GetAsync(string id, CancellationToken cancellationToken = default)
     {
-        var response = await _mediator.Send(new GetCoverByIdQuery(id));
+        var response = await _mediator.Send(new GetCoverByIdQuery(id), cancellationToken);
         if (response == null)
         {
             return NotFound();

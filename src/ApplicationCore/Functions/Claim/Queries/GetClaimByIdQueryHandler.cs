@@ -17,6 +17,6 @@ public class GetClaimByIdQueryHandler : IRequestHandler<GetClaimByIdQuery, Entit
     
     public Task<Entities.Claim> Handle(GetClaimByIdQuery request, CancellationToken cancellationToken)
     {
-        return _claimRepository.GetItemAsync(request.Id);
+        return _claimRepository.GetItemAsync(request.Id, cancellationToken);
     }
 }

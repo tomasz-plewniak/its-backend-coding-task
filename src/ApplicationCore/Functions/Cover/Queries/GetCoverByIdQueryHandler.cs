@@ -17,6 +17,6 @@ public class GetCoverByIdQueryHandler : IRequestHandler<GetCoverByIdQuery, Entit
     
     public Task<Entities.Cover> Handle(GetCoverByIdQuery request, CancellationToken cancellationToken)
     {
-        return _coverRepository.GetItemAsync(request.Id);
+        return _coverRepository.GetItemAsync(request.Id, cancellationToken);
     }
 }

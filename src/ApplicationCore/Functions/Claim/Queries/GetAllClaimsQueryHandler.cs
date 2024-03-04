@@ -17,6 +17,6 @@ public class GetAllClaimsQueryHandler : IRequestHandler<GetAllClaimsQuery, IEnum
     
     public Task<IEnumerable<Entities.Claim>> Handle(GetAllClaimsQuery request, CancellationToken cancellationToken)
     {
-        return _claimRepository.GetAllAsync();
+        return _claimRepository.GetAllAsync(cancellationToken);
     }
 }

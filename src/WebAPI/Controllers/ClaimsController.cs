@@ -33,9 +33,9 @@ public class ClaimsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IEnumerable<Claim>> GetAsync()
+    public async Task<IEnumerable<Claim>> GetAsync(CancellationToken cancellationToken = default)
     {
-        var result = await _mediator.Send(new GetAllClaimsQuery(), CancellationToken.None);
+        var result = await _mediator.Send(new GetAllClaimsQuery(), cancellationToken);
 
         return _mapper.Map<IEnumerable<Claim>>(result);
     }
@@ -64,9 +64,9 @@ public class ClaimsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<Claim> GetAsync(string id)
+    public async Task<Claim> GetAsync(string id, CancellationToken cancellationToken = default)
     {
-        var result = await _mediator.Send(new GetClaimByIdQuery(id), CancellationToken.None);
+        var result = await _mediator.Send(new GetClaimByIdQuery(id), cancellationToken);
 
         return _mapper.Map<Claim>(result);
     }

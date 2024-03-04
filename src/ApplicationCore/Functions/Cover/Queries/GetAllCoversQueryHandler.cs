@@ -18,6 +18,6 @@ public class GetAllCoversQueryHandler : IRequestHandler<GetAllCoversQuery, IEnum
     
     public Task<IEnumerable<Entities.Cover>> Handle(GetAllCoversQuery request, CancellationToken cancellationToken)
     {
-        return _coverRepository.GetAllAsync();
+        return _coverRepository.GetAllAsync(cancellationToken);
     }
 }

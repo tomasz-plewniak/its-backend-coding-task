@@ -21,9 +21,13 @@ public class PremiumController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<ActionResult> ComputePremiumAsync(DateOnly startDate, DateOnly endDate, CoverType coverType)
+    public async Task<ActionResult> ComputePremiumAsync(
+        DateOnly startDate,
+        DateOnly endDate,
+        CoverType coverType,
+        CancellationToken cancellationToken = default)
     {
-        var result = await _mediator.Send(new CalculatePremiumQuery(startDate, endDate, coverType));
+        var result = await _mediator.Send(new CalculatePremiumQuery(startDate, endDate, coverType), cancellationToken);
         return Ok(result);
     }
 }
