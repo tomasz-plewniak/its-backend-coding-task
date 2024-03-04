@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Interfaces;
+﻿using System.Reflection;
+using ApplicationCore.Interfaces;
 using ApplicationCore.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,8 +12,10 @@ public static class ConfigureServices
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddTransient<IPremiumService, PremiumService>();
+        services.AddTransient<ICalculatePremiumService, CalculatePremiumService>();
         services.AddTransient<IDateTimeService, DateTimeService>();
+        
+        services.AddMediatR(conf => conf.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         
         return services;
     }

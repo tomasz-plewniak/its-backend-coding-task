@@ -4,13 +4,13 @@ using Shared.Enums;
 
 namespace UnitTests.ApplicationCore.Services;
 
-public class PremiumServiceTests
+public class CalculatePremiumServiceTests
 {
-    PremiumService _premiumService;
+    CalculatePremiumService _calculatePremiumService;
     
-    public PremiumServiceTests()
+    public CalculatePremiumServiceTests()
     {
-        _premiumService = new PremiumService();
+        _calculatePremiumService = new CalculatePremiumService();
     }
     
     [Fact]
@@ -21,7 +21,7 @@ public class PremiumServiceTests
         var coverType = CoverType.Yacht;
         var expectedPremium = 1375m;
 
-        var result = _premiumService.ComputePremium(startDate, endDate, coverType);
+        var result = _calculatePremiumService.ComputePremium(startDate, endDate, coverType);
 
         result.Should().Be(expectedPremium);
     }
@@ -34,7 +34,7 @@ public class PremiumServiceTests
         var coverType = CoverType.PassengerShip;
         var expectedPremium = 1500m;
 
-        var result = _premiumService.ComputePremium(startDate, endDate, coverType);
+        var result = _calculatePremiumService.ComputePremium(startDate, endDate, coverType);
 
         result.Should().Be(expectedPremium);
     }
@@ -47,7 +47,7 @@ public class PremiumServiceTests
         var coverType = CoverType.Tanker;
         var expectedPremium = 1875m;
 
-        var result = _premiumService.ComputePremium(startDate, endDate, coverType);
+        var result = _calculatePremiumService.ComputePremium(startDate, endDate, coverType);
 
         result.Should().Be(expectedPremium);
     }
@@ -60,7 +60,7 @@ public class PremiumServiceTests
         var coverType = CoverType.BulkCarrier;
         var expectedPremium = 1625m;
 
-        var result = _premiumService.ComputePremium(startDate, endDate, coverType);
+        var result = _calculatePremiumService.ComputePremium(startDate, endDate, coverType);
 
         result.Should().Be(expectedPremium);
     }
@@ -73,7 +73,7 @@ public class PremiumServiceTests
         var coverType = CoverType.Yacht;
         var expectedPremium = 42556.250m; 
 
-        var result = _premiumService.ComputePremium(startDate, endDate, coverType);
+        var result = _calculatePremiumService.ComputePremium(startDate, endDate, coverType);
 
         result.Should().Be(expectedPremium);
     }
@@ -86,7 +86,7 @@ public class PremiumServiceTests
         var coverType = CoverType.PassengerShip;
         var expectedPremium = 46470.000m;
 
-        var result = _premiumService.ComputePremium(startDate, endDate, coverType);
+        var result = _calculatePremiumService.ComputePremium(startDate, endDate, coverType);
 
         result.Should().Be(expectedPremium);
     }
@@ -99,7 +99,7 @@ public class PremiumServiceTests
         var coverType = CoverType.Tanker;
         var expectedPremium = 58087.5m;
 
-        var result = _premiumService.ComputePremium(startDate, endDate, coverType);
+        var result = _calculatePremiumService.ComputePremium(startDate, endDate, coverType);
 
         result.Should().Be(expectedPremium);
     }
@@ -112,7 +112,7 @@ public class PremiumServiceTests
         var coverType = CoverType.BulkCarrier;
         var expectedPremium = 50342.5m;
 
-        var result = _premiumService.ComputePremium(startDate, endDate, coverType);
+        var result = _calculatePremiumService.ComputePremium(startDate, endDate, coverType);
 
         result.Should().Be(expectedPremium);
     }
@@ -125,7 +125,7 @@ public class PremiumServiceTests
         var coverType = CoverType.Yacht;
         var expectedPremium = 199333.75m;
 
-        var result = _premiumService.ComputePremium(startDate, endDate, coverType);
+        var result = _calculatePremiumService.ComputePremium(startDate, endDate, coverType);
 
         result.Should().Be(expectedPremium);
     }
@@ -138,7 +138,7 @@ public class PremiumServiceTests
         var coverType = CoverType.PassengerShip;
         var expectedPremium = 222885m;
 
-        var result = _premiumService.ComputePremium(startDate, endDate, coverType);
+        var result = _calculatePremiumService.ComputePremium(startDate, endDate, coverType);
 
         result.Should().Be(expectedPremium);
     }
@@ -151,7 +151,7 @@ public class PremiumServiceTests
         var coverType = CoverType.Tanker;
         var expectedPremium = 278606.25m;
 
-        var result = _premiumService.ComputePremium(startDate, endDate, coverType);
+        var result = _calculatePremiumService.ComputePremium(startDate, endDate, coverType);
 
         result.Should().Be(expectedPremium);
     }
@@ -164,7 +164,7 @@ public class PremiumServiceTests
         var coverType = CoverType.BulkCarrier;
         var expectedPremium = 241458.75m;
 
-        var result = _premiumService.ComputePremium(startDate, endDate, coverType);
+        var result = _calculatePremiumService.ComputePremium(startDate, endDate, coverType);
 
         result.Should().Be(expectedPremium);
     }

@@ -4,7 +4,7 @@ using Shared.Enums;
 
 namespace ApplicationCore.Services;
 
-public class PremiumService : IPremiumService
+public class CalculatePremiumService : ICalculatePremiumService
 {
     private const decimal BaseDayRate = 1250;
     

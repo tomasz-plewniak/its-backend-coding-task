@@ -19,13 +19,13 @@ public abstract class GenericRepository<TEntity> : IGenericRepository<TEntity>
         _container = cosmosClient.GetContainer(DatabaseId, ContainerId);
     }
 
-    public async Task<IEnumerable<TEntity>> GetAllAsync()
+    public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var query = _container.GetItemQueryIterator<TEntity>(new QueryDefinition("SELECT * FROM c"));
         var results = new List<TEntity>();
         while (query.HasMoreResults)
         {
-            var response = await query.ReadNextAsync();
+            var response = await query.ReadNextAsync(cancellationToken);
 
             results.AddRange(response.ToList());
         }
@@ -33,11 +33,11 @@ public abstract class GenericRepository<TEntity> : IGenericRepository<TEntity>
         return results;
     }
     
-    public async Task<TEntity> GetItemAsync(string id)
+    public async Task<TEntity> GetItemAsync(string id, CancellationToken cancellationToken = default)
     {
         try
         {
-            var response = await _container.ReadItemAsync<TEntity>(id, new PartitionKey(id));
+            var response = await _container.ReadItemAsync<TEntity>(id, new PartitionKey(id), cancellationToken: cancellationToken);
             return response.Resource;
         }
         catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)

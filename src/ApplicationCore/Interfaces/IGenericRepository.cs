@@ -9,12 +9,12 @@ public interface IGenericRepository<TEntity>
  
     string ContainerId { get; }
     
-    Task<IEnumerable<TEntity>> GetAllAsync();
+    Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
     
     Task AddItemAsync(TEntity item);
 
     
-    Task<TEntity> GetItemAsync(string id);
+    Task<TEntity> GetItemAsync(string id, CancellationToken cancellationToken = default);
 
 
     Task DeleteItemAsync(string id);

@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Interfaces;
+﻿using ApplicationCore.Functions.Premium.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Enums;
 
@@ -9,17 +10,24 @@ namespace WebAPI.Controllers;
 public class PremiumController : ControllerBase
 {
     private readonly ILogger<PremiumController> _logger;
-    private readonly IPremiumService _premiumService;
+    private readonly IMediator _mediator;
 
-    public PremiumController(ILogger<PremiumController> logger, IPremiumService premiumService)
+    public PremiumController(
+        ILogger<PremiumController> logger,
+        IMediator mediator)
     {
         _logger = logger;
-        _premiumService = premiumService;
+        _mediator = mediator;
     }
     
     [HttpGet]
-    public async Task<ActionResult> ComputePremiumAsync(DateOnly startDate, DateOnly endDate, CoverType coverType)
+    public async Task<ActionResult> ComputePremiumAsync(
+        DateOnly startDate,
+        DateOnly endDate,
+        CoverType coverType,
+        CancellationToken cancellationToken = default)
     {
-        return Ok(_premiumService.ComputePremium(startDate, endDate, coverType));
+        var result = await _mediator.Send(new CalculatePremiumQuery(startDate, endDate, coverType), cancellationToken);
+        return Ok(result);
     }
 }

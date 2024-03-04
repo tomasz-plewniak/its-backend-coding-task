@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Interfaces;
 
-public interface IPremiumService
+public interface ICalculatePremiumService
 {
     decimal ComputePremium(DateOnly startDate, DateOnly endDate, CoverType coverType);
 }
