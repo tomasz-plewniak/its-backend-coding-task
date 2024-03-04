@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Interfaces;
+using FluentAssertions;
 using FluentValidation.TestHelper;
 using NSubstitute;
 using WebAPI.DTOs;
@@ -153,5 +154,78 @@ public class ClaimValidatorTests
         
         var result = await _claimValidator.TestValidateAsync(model);
         result.ShouldNotHaveValidationErrorFor(claim => claim.Created);
+    }
+    
+    [Fact]
+    public async Task ShouldHaveError_WhenCoverIdIsNull()
+    {
+        var model = new Claim()
+        {
+            DamageCost = 10000,
+            Created = new DateTime(2025, 01, 01),
+            CoverId = null
+        };
+        
+        var result = await _claimValidator.TestValidateAsync(model);
+        result.ShouldHaveValidationErrorFor(claim => claim.CoverId);
+    }
+    
+    [Fact]
+    public async Task ShouldHaveError_WhenCoverIdIsntFound()
+    {
+        var model = new Claim()
+        {
+            DamageCost = 10000,
+            Created = new DateTime(2025, 01, 01),
+            CoverId = Guid.NewGuid().ToString()
+        };
+
+        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns((Cover)null);
+        
+        var result = await _claimValidator.TestValidateAsync(model);
+        result.ShouldHaveValidationErrorFor(claim => claim.CoverId);
+    }
+    
+    [Fact]
+    public async Task ShouldHaveError_WhenCoverStartDateIsDefault()
+    {
+        var model = new Claim()
+        {
+            DamageCost = 10000,
+            Created = new DateTime(2025, 01, 01),
+            CoverId = Guid.NewGuid().ToString()
+        };
+
+        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        {
+            Id = model.CoverId,
+            StartDate = default,
+            EndDate = new DateOnly(2025, 01, 01)
+        });
+        
+        var result = await _claimValidator.TestValidateAsync(model);
+        result.Errors.Should().Contain(e => e.ErrorMessage.Contains("StartDate cannot be null or default"));
+    }
+    
+    [Fact]
+    public async Task ShouldHaveError_WhenCoverEndDateIsDefault()
+    {
+        var model = new Claim()
+        {
+            DamageCost = 10000,
+            Created = new DateTime(2025, 01, 01),
+            CoverId = Guid.NewGuid().ToString()
+        };
+
+        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        {
+            Id = model.CoverId,
+            StartDate = new DateOnly(2024, 01, 01),
+            EndDate = default
+        });
+        
+        var result = await _claimValidator.TestValidateAsync(model);
+        
+        result.Errors.Should().Contain(e => e.ErrorMessage.Contains("EndDate cannot be null or default"));
     }
 }
