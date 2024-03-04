@@ -1,16 +1,22 @@
-﻿using FluentValidation.TestHelper;
+﻿using ApplicationCore.Interfaces;
+using FluentValidation.TestHelper;
+using NSubstitute;
 using WebAPI.DTOs;
 using WebAPI.Validators;
+using Cover = ApplicationCore.Entities.Cover;
 
 namespace UnitTests.WebApi.Validators;
 
 public class ClaimValidatorTests
 {
     private ClaimValidator _claimValidator;
+    private ICoverRepository _coverRepository;
     
     public ClaimValidatorTests()
     {
-        _claimValidator = new ClaimValidator();    
+        _coverRepository = Substitute.For<ICoverRepository>();
+        
+        _claimValidator = new ClaimValidator(_coverRepository);    
     }
     
     [Theory]
@@ -19,11 +25,23 @@ public class ClaimValidatorTests
     [InlineData(123001)]
     [InlineData(1000000)]
     [InlineData(10000000)]
-    public void ShouldHaveError_WhenDamageCostExceed100000(decimal damageCost)
+    public async Task ShouldHaveError_WhenDamageCostExceed100000(decimal damageCost)
     {
-        var model = new Claim() { DamageCost = damageCost };
+        var model = new Claim()
+        {
+            DamageCost = damageCost,
+            Created = new DateTime(2024, 05, 01),
+            CoverId = Guid.NewGuid().ToString()
+        };
+
+        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        {
+            Id = model.CoverId,
+            StartDate = new DateOnly(2024, 01, 01),
+            EndDate = new DateOnly(2025, 01, 01)
+        });
         
-        var result = _claimValidator.TestValidate(model);
+        var result = await _claimValidator.TestValidateAsync(model);
         result.ShouldHaveValidationErrorFor(claim => claim.DamageCost);
     }
     
@@ -33,11 +51,107 @@ public class ClaimValidatorTests
     [InlineData(2332)]
     [InlineData(999)]
     [InlineData(23342)]
-    public void ShouldNotHaveError_WhenDamageCostIsntExceed100000(decimal damageCost)
+    public async Task ShouldNotHaveError_WhenDamageCostIsntExceed100000(decimal damageCost)
     {
-        var model = new Claim() { DamageCost = damageCost };
+        var model = new Claim()
+        {
+            DamageCost = damageCost,
+            Created = new DateTime(2024, 05, 01),
+            CoverId = Guid.NewGuid().ToString()
+        };
+
+        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        {
+            Id = model.CoverId,
+            StartDate = new DateOnly(2024, 01, 01),
+            EndDate = new DateOnly(2025, 01, 01)
+        });
         
-        var result = _claimValidator.TestValidate(model);
+        var result = await _claimValidator.TestValidateAsync(model);
         result.ShouldNotHaveValidationErrorFor(claim => claim.DamageCost);
+    }
+    
+    [Fact]
+    public async Task ShouldHaveError_WhenClaimDateIsntBetweenCoverDateRange()
+    {
+        var model = new Claim()
+        {
+            DamageCost = 10000,
+            Created = new DateTime(2023, 05, 01),
+            CoverId = Guid.NewGuid().ToString()
+        };
+
+        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        {
+            Id = model.CoverId,
+            StartDate = new DateOnly(2024, 01, 01),
+            EndDate = new DateOnly(2025, 01, 01)
+        });
+        
+        var result = await _claimValidator.TestValidateAsync(model);
+        result.ShouldHaveValidationErrorFor(claim => claim.Created);
+    }
+    
+    [Fact]
+    public async Task ShouldNotHaveError_WhenClaimDateIsBetweenCoverDateRange()
+    {
+        var model = new Claim()
+        {
+            DamageCost = 10000,
+            Created = new DateTime(2024, 05, 01),
+            CoverId = Guid.NewGuid().ToString()
+        };
+
+        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        {
+            Id = model.CoverId,
+            StartDate = new DateOnly(2024, 01, 01),
+            EndDate = new DateOnly(2025, 01, 01)
+        });
+        
+        var result = await _claimValidator.TestValidateAsync(model);
+        result.ShouldNotHaveValidationErrorFor(claim => claim.Created);
+    }
+    
+    [Fact]
+    public async Task ShouldNotHaveError_WhenClaimDateIsEqualToCoverStartDate()
+    {
+        var model = new Claim()
+        {
+            DamageCost = 10000,
+            Created = new DateTime(2024, 01, 01),
+            CoverId = Guid.NewGuid().ToString()
+        };
+
+        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        {
+            Id = model.CoverId,
+            StartDate = new DateOnly(2024, 01, 01),
+            EndDate = new DateOnly(2025, 01, 01)
+        });
+        
+        var result = await _claimValidator.TestValidateAsync(model);
+        result.ShouldNotHaveValidationErrorFor(claim => claim.Created);
+    }
+    
+    [Fact]
+    public async Task ShouldNotHaveError_WhenClaimDateIsEqualToCoverEndDate()
+    {
+        var model = new Claim()
+        {
+            DamageCost = 10000,
+            Created = new DateTime(2025, 01, 01),
+            CoverId = Guid.NewGuid().ToString()
+        };
+
+        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        {
+            Id = model.CoverId,
+            StartDate = new DateOnly(2024, 01, 01),
+            EndDate = new DateOnly(2025, 01, 01)
+        });
+        
+        var result = await _claimValidator.TestValidateAsync(model);
+        result.ShouldNotHaveValidationErrorFor(claim => claim.Created);
     }
 }

@@ -21,4 +21,9 @@ public static class DateOnlyExtension
                 return false;
         }
     }
+    
+    public static bool IsDateBetweenInclusive(this DateOnly dateToCheck, DateOnly startDate, DateOnly endDate)
+    {
+        return dateToCheck >= startDate && dateToCheck <= endDate;
+    }
 }

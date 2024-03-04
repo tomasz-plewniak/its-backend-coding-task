@@ -12,9 +12,7 @@ public class CoverValidator : AbstractValidator<Cover>
     public CoverValidator(IDateTimeService dateTimeService)
     {
         _dateTimeService = dateTimeService;
-
-        var test = _dateTimeService.DateNow();
-
+        
         RuleFor(x => x.StartDate).GreaterThanOrEqualTo(dateTimeService.DateNow())
             .WithMessage("StartDate cannot be in the past");
         

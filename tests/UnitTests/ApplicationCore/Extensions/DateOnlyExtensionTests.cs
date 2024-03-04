@@ -48,4 +48,40 @@ public class DateOnlyExtensionTests
 
         result.Should().BeTrue();
     }
+    
+    [Fact]
+    public void IsDateBetweenInclusive_WhenDateIsBetween_ReturnsTrue()
+    {
+        var dateToCheck = new DateOnly(2023, 1, 1);
+        var startDate = new DateOnly(2022, 1, 1);
+        var endDate = new DateOnly(2024, 1, 1);
+        
+        bool result = dateToCheck.IsDateBetweenInclusive(startDate, endDate);
+
+        result.Should().BeTrue();
+    }
+    
+    [Fact]
+    public void IsDateBetweenInclusive_WhenDateIsEqualToStartDate_ReturnsTrue()
+    {
+        var dateToCheck = new DateOnly(2022, 1, 1);
+        var startDate = new DateOnly(2022, 1, 1);
+        var endDate = new DateOnly(2024, 1, 1);
+        
+        bool result = dateToCheck.IsDateBetweenInclusive(startDate, endDate);
+
+        result.Should().BeTrue();
+    }
+    
+    [Fact]
+    public void IsDateBetweenInclusive_WhenDateIsEqualToEndDate_ReturnsTrue()
+    {
+        var dateToCheck = new DateOnly(2024, 1, 1);
+        var startDate = new DateOnly(2022, 1, 1);
+        var endDate = new DateOnly(2024, 1, 1);
+        
+        bool result = dateToCheck.IsDateBetweenInclusive(startDate, endDate);
+
+        result.Should().BeTrue();
+    }
 }
