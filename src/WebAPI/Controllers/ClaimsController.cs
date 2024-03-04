@@ -63,7 +63,7 @@ namespace WebAPI.Controllers
             
             var result = await _mediator.Send(new CreateClaimCommand(claimEntity));
             
-            return Ok(result);
+            return Ok(_mapper.Map<Claim>(result));
         }
 
         [HttpDelete("{id}")]

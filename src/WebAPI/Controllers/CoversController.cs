@@ -1,8 +1,10 @@
+using ApplicationCore.Functions.Cover.Commands;
 using ApplicationCore.Interfaces;
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
 using Infrastructure.SQLDatabase;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.DTOs;
 using Entities = ApplicationCore.Entities;
@@ -18,6 +20,7 @@ public class CoversController : ControllerBase
     private readonly ICoverRepository _coverRepository;
     private readonly IMapper _mapper;
     private readonly IValidator<Cover> _coverValidator;
+    private readonly IMediator _mediator;
     private readonly Auditer _auditer;
 
     public CoversController(
@@ -26,13 +29,15 @@ public class CoversController : ControllerBase
         IPremiumService premiumService,
         ICoverRepository coverRepository,
         IMapper mapper,
-        IValidator<Cover> coverValidator)
+        IValidator<Cover> coverValidator,
+        IMediator mediator)
     {
         _logger = logger;
         _premiumService = premiumService;
         _coverRepository = coverRepository;
         _mapper = mapper;
         _coverValidator = coverValidator;
+        _mediator = mediator;
         _auditer = new Auditer(auditContext);
     }
 
@@ -59,24 +64,22 @@ public class CoversController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> CreateAsync(Cover cover)
     {
-        ValidationResult result = await _coverValidator.ValidateAsync(cover);
+        ValidationResult validationResult = await _coverValidator.ValidateAsync(cover);
 
-        if (result.IsValid == false)
+        if (validationResult.IsValid == false)
         {
-            return BadRequest(result.Errors.Select(x => x.ErrorMessage).ToList());
+            return BadRequest(validationResult.Errors.Select(x => x.ErrorMessage).ToList());
         }
         
-        cover.Id = Guid.NewGuid().ToString();
-        cover.Premium = _premiumService.ComputePremium(cover.StartDate, cover.EndDate, cover.Type);
-        await _coverRepository.AddItemAsync(_mapper.Map<Entities.Cover>(cover));
-        _auditer.AuditCover(cover.Id, "POST");
-        return Ok(cover);
+        var coverEntity = _mapper.Map<Entities.Cover>(cover);
+        var result = await _mediator.Send(new CreateCoverCommand(coverEntity));
+        
+        return Ok(_mapper.Map<Cover>(result));
     }
 
     [HttpDelete("{id}")]
-    public Task DeleteAsync(string id)
+    public async Task DeleteAsync(string id)
     {
-        _auditer.AuditCover(id, "DELETE");
-        return _coverRepository.DeleteItemAsync(id);
+        await _mediator.Send(new DeleteCoverByIdCommand(id));
     }
 }
