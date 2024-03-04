@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Functions.Claim.Notifications;
-using ApplicationCore.Interfaces;
+﻿using ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

@@ -1,4 +1,3 @@
-using ApplicationCore.Functions.Claim;
 using ApplicationCore.Functions.Claim.Commands;
 using ApplicationCore.Functions.Claim.Queries;
 using ApplicationCore.Interfaces;
