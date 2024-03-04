@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Interfaces;
+﻿using ApplicationCore.Functions.Claim.Notifications;
+using ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -8,11 +9,16 @@ public class CreateClaimCommandHandler : IRequestHandler<CreateClaimCommand, Ent
 {
     private readonly ILogger<CreateClaimCommandHandler> _logger;
     private readonly IClaimRepository _claimRepository;
+    private readonly IMediator _mediator;
 
-    public CreateClaimCommandHandler(ILogger<CreateClaimCommandHandler> logger, IClaimRepository claimRepository)
+    public CreateClaimCommandHandler(
+        ILogger<CreateClaimCommandHandler> logger,
+        IClaimRepository claimRepository,
+        IMediator mediator)
     {
         _logger = logger;
         _claimRepository = claimRepository;
+        _mediator = mediator;
     }
 
     public async Task<Entities.Claim> Handle(CreateClaimCommand request, CancellationToken cancellationToken)
@@ -20,8 +26,7 @@ public class CreateClaimCommandHandler : IRequestHandler<CreateClaimCommand, Ent
         request.Claim.Id = Guid.NewGuid().ToString();
         
         await _claimRepository.AddItemAsync(request.Claim);
-        // TODO: Add audit;
-        // _auditer.AuditClaim(claim.Id, "POST");
+        await _mediator.Publish(new ClaimCreatedNotification(request.Claim.Id));
         
         return request.Claim;
     }

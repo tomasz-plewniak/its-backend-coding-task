@@ -33,9 +33,10 @@ public static class ConfigureServices
         
         services
             .AddTransient<IClaimRepository, ClaimRepository>();
-        
         services
             .AddTransient<ICoverRepository, CoverRepository>();
+
+        services.AddTransient<IAuditerService, AuditerService>();
         
         return services;
     }

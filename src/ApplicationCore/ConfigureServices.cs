@@ -12,9 +12,9 @@ public static class ConfigureServices
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddTransient<IPremiumService, PremiumService>();
+        services.AddTransient<ICalculatePremiumService, CalculatePremiumService>();
         services.AddTransient<IDateTimeService, DateTimeService>();
-
+        
         services.AddMediatR(conf => conf.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         
         return services;

@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Interfaces;
+﻿using ApplicationCore.Functions.Cover.Notifications;
+using ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -8,17 +9,21 @@ public class DeleteCoverByIdCommandHandler : IRequestHandler<DeleteCoverByIdComm
 {
     private readonly ILogger<CreateCoverCommandHandler> _logger;
     private readonly ICoverRepository _coverRepository;
+    private readonly IMediator _mediator;
 
-    public DeleteCoverByIdCommandHandler(ILogger<CreateCoverCommandHandler> logger, ICoverRepository coverRepository)
+    public DeleteCoverByIdCommandHandler(
+        ILogger<CreateCoverCommandHandler> logger,
+        ICoverRepository coverRepository,
+        IMediator mediator)
     {
         _logger = logger;
         _coverRepository = coverRepository;
+        _mediator = mediator;
     }
     
     public async Task Handle(DeleteCoverByIdCommand request, CancellationToken cancellationToken)
     {
         await _coverRepository.DeleteItemAsync(request.Id);
-        // TODO: Add audit.
-        // _auditer.AuditCover(id, "DELETE");
+        await _mediator.Publish(new CoverDeletedNotification(request.Id));
     }
 }

@@ -16,7 +16,7 @@ namespace WebAPI.Controllers;
 public class CoversController : ControllerBase
 {
     private readonly ILogger<CoversController> _logger;
-    private readonly IPremiumService _premiumService;
+    private readonly ICalculatePremiumService _calculatePremiumService;
     private readonly ICoverRepository _coverRepository;
     private readonly IMapper _mapper;
     private readonly IValidator<Cover> _coverValidator;
@@ -26,14 +26,14 @@ public class CoversController : ControllerBase
     public CoversController(
         AuditContext auditContext,
         ILogger<CoversController> logger,
-        IPremiumService premiumService,
+        ICalculatePremiumService calculatePremiumService,
         ICoverRepository coverRepository,
         IMapper mapper,
         IValidator<Cover> coverValidator,
         IMediator mediator)
     {
         _logger = logger;
-        _premiumService = premiumService;
+        _calculatePremiumService = calculatePremiumService;
         _coverRepository = coverRepository;
         _mapper = mapper;
         _coverValidator = coverValidator;

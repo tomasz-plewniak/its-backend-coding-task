@@ -1,4 +1,6 @@
-﻿using ApplicationCore.Interfaces;
+﻿using ApplicationCore.Functions.Cover.Notifications;
+using ApplicationCore.Functions.Premium.Queries;
+using ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -8,25 +10,32 @@ public class CreateCoverCommandHandler : IRequestHandler<CreateCoverCommand, Ent
 {
     private readonly ILogger<CreateCoverCommandHandler> _logger;
     private readonly ICoverRepository _coverRepository;
+    private readonly IMediator _mediator;
 
-    public CreateCoverCommandHandler(ILogger<CreateCoverCommandHandler> logger, ICoverRepository coverRepository)
+    public CreateCoverCommandHandler(
+        ILogger<CreateCoverCommandHandler> logger,
+        ICoverRepository coverRepository,
+        IMediator mediator)
     {
         _logger = logger;
         _coverRepository = coverRepository;
+        _mediator = mediator;
     }
     
     public async Task<Entities.Cover> Handle(CreateCoverCommand request, CancellationToken cancellationToken)
     {
         request.Cover.Id = Guid.NewGuid().ToString();
         
-        // TODO: Calculate real premium;
-        request.Cover.Premium = 100;
+        decimal calculatedPremium = await _mediator.Send(new CalculatePremiumQuery(
+            request.Cover.StartDate,
+            request.Cover.EndDate,
+            request.Cover.Type));
+        
+        request.Cover.Premium = calculatedPremium;
         
         await _coverRepository.AddItemAsync(request.Cover);
+        await _mediator.Publish(new CoverCreatedNotification(request.Cover.Id));
         
-        // TODO: Add audit.
-        // _auditer.AuditCover(cover.Id, "POST");
-
         return request.Cover;
     }
 }
