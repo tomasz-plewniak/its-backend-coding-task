@@ -1,8 +1,12 @@
+using ApplicationCore.Functions.Claim;
+using ApplicationCore.Functions.Claim.Commands;
+using ApplicationCore.Functions.Claim.Queries;
 using ApplicationCore.Interfaces;
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
 using Infrastructure.SQLDatabase;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.DTOs;
 using Entities = ApplicationCore.Entities;
@@ -18,6 +22,7 @@ namespace WebAPI.Controllers
         private readonly IClaimRepository _claimRepository;
         private readonly IMapper _mapper;
         private readonly IValidator<Claim> _claimValidator;
+        private readonly IMediator _mediator;
         private readonly Auditer _auditer;
 
         public ClaimsController(
@@ -25,37 +30,40 @@ namespace WebAPI.Controllers
             AuditContext auditContext,
             IClaimRepository claimRepository,
             IMapper mapper,
-            IValidator<Claim> claimValidator)
+            IValidator<Claim> claimValidator,
+            IMediator mediator)
         {
             _logger = logger;
             _claimRepository = claimRepository;
             _mapper = mapper;
             _claimValidator = claimValidator;
+            _mediator = mediator;
             _auditer = new Auditer(auditContext);
         }
 
         [HttpGet]
         public async Task<IEnumerable<Claim>> GetAsync()
         {
-            var result = await _claimRepository.GetAllAsync();
-
+            var result = await _mediator.Send(new GetAllClaimsQuery(), CancellationToken.None);
+            
             return _mapper.Map<IEnumerable<Claim>>(result);
         }
 
         [HttpPost]
         public async Task<ActionResult> CreateAsync(Claim claim)
         {
-            ValidationResult result = await _claimValidator.ValidateAsync(claim);
+            ValidationResult validationResult = await _claimValidator.ValidateAsync(claim);
 
-            if (result.IsValid == false)
+            if (validationResult.IsValid == false)
             {
-                return BadRequest(result.Errors.Select(x => x.ErrorMessage).ToList());
+                return BadRequest(validationResult.Errors.Select(x => x.ErrorMessage).ToList());
             }
             
-            claim.Id = Guid.NewGuid().ToString();
-            await _claimRepository.AddItemAsync(_mapper.Map<Entities.Claim>(claim));
-            _auditer.AuditClaim(claim.Id, "POST");
-            return Ok(claim);
+            var claimEntity = _mapper.Map<Entities.Claim>(claim);
+            
+            var result = await _mediator.Send(new CreateClaimCommand(claimEntity));
+            
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
@@ -68,7 +76,8 @@ namespace WebAPI.Controllers
         [HttpGet("{id}")]
         public async Task<Claim> GetAsync(string id)
         {
-            var result = await _claimRepository.GetItemAsync(id);
+            var result = await _mediator.Send(new GetClaimByIdQuery(id), CancellationToken.None);
+            
             return _mapper.Map<Claim>(result);
         }
     }
