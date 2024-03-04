@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Functions.Premium.Queries;
-using ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Enums;
@@ -11,16 +10,13 @@ namespace WebAPI.Controllers;
 public class PremiumController : ControllerBase
 {
     private readonly ILogger<PremiumController> _logger;
-    private readonly ICalculatePremiumService _calculatePremiumService;
     private readonly IMediator _mediator;
 
     public PremiumController(
         ILogger<PremiumController> logger,
-        ICalculatePremiumService calculatePremiumService,
         IMediator mediator)
     {
         _logger = logger;
-        _calculatePremiumService = calculatePremiumService;
         _mediator = mediator;
     }
     

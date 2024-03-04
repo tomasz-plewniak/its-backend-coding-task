@@ -1,9 +1,8 @@
 using ApplicationCore.Functions.Cover.Commands;
-using ApplicationCore.Interfaces;
+using ApplicationCore.Functions.Cover.Queries;
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
-using Infrastructure.SQLDatabase;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.DTOs;
@@ -16,35 +15,27 @@ namespace WebAPI.Controllers;
 public class CoversController : ControllerBase
 {
     private readonly ILogger<CoversController> _logger;
-    private readonly ICalculatePremiumService _calculatePremiumService;
-    private readonly ICoverRepository _coverRepository;
     private readonly IMapper _mapper;
     private readonly IValidator<Cover> _coverValidator;
     private readonly IMediator _mediator;
-    private readonly Auditer _auditer;
 
     public CoversController(
-        AuditContext auditContext,
         ILogger<CoversController> logger,
-        ICalculatePremiumService calculatePremiumService,
-        ICoverRepository coverRepository,
         IMapper mapper,
         IValidator<Cover> coverValidator,
         IMediator mediator)
     {
         _logger = logger;
-        _calculatePremiumService = calculatePremiumService;
-        _coverRepository = coverRepository;
         _mapper = mapper;
         _coverValidator = coverValidator;
         _mediator = mediator;
-        _auditer = new Auditer(auditContext);
     }
 
     [HttpGet]
-    public async Task<ActionResult<Cover>> GetAsync()
+    public async Task<ActionResult<IEnumerable<Cover>>> GetAsync()
     {
-        var results = await _coverRepository.GetAllAsync();
+
+        var results = await _mediator.Send(new GetAllCoversQuery());
         
         return Ok(_mapper.Map<IEnumerable<Cover>>(results));
     }
@@ -52,7 +43,7 @@ public class CoversController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Cover>> GetAsync(string id)
     {
-        var response = await _coverRepository.GetItemAsync(id);
+        var response = await _mediator.Send(new GetCoverByIdQuery(id));
         if (response == null)
         {
             return NotFound();
