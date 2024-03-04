@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Shared.Enums;
 
 namespace IntegrationTests.Controllers;
 
