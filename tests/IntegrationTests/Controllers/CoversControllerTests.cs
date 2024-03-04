@@ -6,7 +6,7 @@ namespace IntegrationTests.Controllers;
 
 public class CoversControllerTests
 {
-    [Fact]
+    [Fact(Skip = "No testing environment available.")]
     public async Task Get_Covers()
     {
         var application = new WebApplicationFactory<Program>()

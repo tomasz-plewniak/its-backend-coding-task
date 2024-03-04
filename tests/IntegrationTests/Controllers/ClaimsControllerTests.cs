@@ -6,7 +6,7 @@ namespace IntegrationTests.Controllers;
 
 public class ClaimsControllerTests
 {
-    [Fact]
+    [Fact(Skip = "No testing environment available.")]
     public async Task Get_Claims()
     {
         var application = new WebApplicationFactory<Program>()

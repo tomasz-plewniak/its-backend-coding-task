@@ -6,7 +6,7 @@ namespace IntegrationTests.Controllers;
 
 public class PremiumsControllerTests
 {
-    [Fact]
+    [Fact(Skip = "No testing environment available.")]
     public async Task Get_CalculatedPremium()
     {
         var application = new WebApplicationFactory<Program>()
