@@ -19,7 +19,7 @@ public class ClaimValidatorTests
     [InlineData(123001)]
     [InlineData(1000000)]
     [InlineData(10000000)]
-    public void ShouldHaveErrorWhenDamageCostExceed100000(decimal damageCost)
+    public void ShouldHaveError_WhenDamageCostExceed100000(decimal damageCost)
     {
         var model = new Claim() { DamageCost = damageCost };
         
@@ -33,7 +33,7 @@ public class ClaimValidatorTests
     [InlineData(2332)]
     [InlineData(999)]
     [InlineData(23342)]
-    public void ShouldNotHaveErrorWhenDamageCostIsntExceed100000(decimal damageCost)
+    public void ShouldNotHaveError_WhenDamageCostIsntExceed100000(decimal damageCost)
     {
         var model = new Claim() { DamageCost = damageCost };
         
