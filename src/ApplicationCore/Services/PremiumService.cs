@@ -1,39 +1,42 @@
-﻿using ApplicationCore.Interfaces;
+﻿using ApplicationCore.Extensions;
+using ApplicationCore.Interfaces;
 using Shared.Enums;
 
 namespace ApplicationCore.Services;
 
 public class PremiumService : IPremiumService
 {
+    private const decimal BaseDayRate = 1250;
+    
     public decimal ComputePremium(DateOnly startDate, DateOnly endDate, CoverType coverType)
     {
-        var multiplier = 1.3m;
-        if (coverType == CoverType.Yacht)
-        {
-            multiplier = 1.1m;
-        }
+        decimal multiplier = CalculateMultiplierService.CalculateMultiplier(coverType);
 
-        if (coverType == CoverType.PassengerShip)
-        {
-            multiplier = 1.2m;
-        }
-
-        if (coverType == CoverType.Tanker)
-        {
-            multiplier = 1.5m;
-        }
-
-        var premiumPerDay = 1250 * multiplier;
-        var insuranceLength = endDate.DayNumber - startDate.DayNumber;
+        var premiumPerDay = BaseDayRate * multiplier;
+        var insuranceLength = startDate.ReturnNumberOfDaysBetweenDates(endDate);
+        
         var totalPremium = 0m;
 
         for (var i = 0; i < insuranceLength; i++)
         {
-            if (i < 30) totalPremium += premiumPerDay;
-            if (i < 180 && coverType == CoverType.Yacht) totalPremium += premiumPerDay - premiumPerDay * 0.05m;
-            else if (i < 180) totalPremium += premiumPerDay - premiumPerDay * 0.02m;
-            if (i < 365 && coverType != CoverType.Yacht) totalPremium += premiumPerDay - premiumPerDay * 0.03m;
-            else if (i < 365) totalPremium += premiumPerDay - premiumPerDay * 0.08m;
+            switch (i)
+            {
+                case < 30:
+                    totalPremium += premiumPerDay;
+                    break;
+                case < 150 when coverType == CoverType.Yacht:
+                    totalPremium += premiumPerDay - premiumPerDay * 0.05m;
+                    break;
+                case < 150:
+                    totalPremium += premiumPerDay - premiumPerDay * 0.02m;
+                    break;
+                case var _ when i < insuranceLength && coverType == CoverType.Yacht:
+                    totalPremium += premiumPerDay - premiumPerDay * 0.03m;
+                    break;
+                case var _ when i < insuranceLength:
+                    totalPremium += premiumPerDay - premiumPerDay * 0.01m;
+                    break;
+            }
         }
 
         return totalPremium;
