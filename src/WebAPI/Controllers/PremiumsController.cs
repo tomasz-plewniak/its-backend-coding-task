@@ -7,13 +7,13 @@ namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class PremiumController : ControllerBase
+public class PremiumsController : ControllerBase
 {
-    private readonly ILogger<PremiumController> _logger;
+    private readonly ILogger<PremiumsController> _logger;
     private readonly IMediator _mediator;
 
-    public PremiumController(
-        ILogger<PremiumController> logger,
+    public PremiumsController(
+        ILogger<PremiumsController> logger,
         IMediator mediator)
     {
         _logger = logger;
