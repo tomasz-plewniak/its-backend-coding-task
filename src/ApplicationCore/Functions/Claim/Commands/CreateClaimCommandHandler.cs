@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Functions.Claim.Notifications;
+﻿using ApplicationCore.Functions.Audit.Enums;
+using ApplicationCore.Functions.Audit.Notifications;
 using ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -26,7 +27,7 @@ public class CreateClaimCommandHandler : IRequestHandler<CreateClaimCommand, Ent
         request.Claim.Id = Guid.NewGuid().ToString();
         
         await _claimRepository.AddItemAsync(request.Claim);
-        await _mediator.Publish(new ClaimCreatedNotification(request.Claim.Id));
+        await _mediator.Publish(new AuditNotification(request.Claim.Id, EntityType.Claim, HttpMethod.Post.ToString()));
         
         return request.Claim;
     }

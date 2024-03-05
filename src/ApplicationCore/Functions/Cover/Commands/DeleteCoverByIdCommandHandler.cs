@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Functions.Cover.Notifications;
+﻿using ApplicationCore.Functions.Audit.Enums;
+using ApplicationCore.Functions.Audit.Notifications;
 using ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -24,6 +25,6 @@ public class DeleteCoverByIdCommandHandler : IRequestHandler<DeleteCoverByIdComm
     public async Task Handle(DeleteCoverByIdCommand request, CancellationToken cancellationToken)
     {
         await _coverRepository.DeleteItemAsync(request.Id);
-        await _mediator.Publish(new CoverDeletedNotification(request.Id));
+        await _mediator.Publish(new AuditNotification(request.Id, EntityType.Cover, HttpMethod.Delete.ToString()));
     }
 }

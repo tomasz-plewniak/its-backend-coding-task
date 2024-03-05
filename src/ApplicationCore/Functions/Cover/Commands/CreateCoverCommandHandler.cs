@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Functions.Cover.Notifications;
+﻿using ApplicationCore.Functions.Audit.Enums;
+using ApplicationCore.Functions.Audit.Notifications;
 using ApplicationCore.Functions.Premium.Queries;
 using ApplicationCore.Interfaces;
 using MediatR;
@@ -34,7 +35,7 @@ public class CreateCoverCommandHandler : IRequestHandler<CreateCoverCommand, Ent
         request.Cover.Premium = calculatedPremium;
         
         await _coverRepository.AddItemAsync(request.Cover);
-        await _mediator.Publish(new CoverCreatedNotification(request.Cover.Id));
+        await _mediator.Publish(new AuditNotification(request.Cover.Id, EntityType.Cover, HttpMethod.Post.ToString()));
         
         return request.Cover;
     }
