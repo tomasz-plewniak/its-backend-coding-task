@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Functions.Cover.Queries;
-using ApplicationCore.Interfaces;
 using FluentAssertions;
 using FluentValidation.TestHelper;
 using MediatR;

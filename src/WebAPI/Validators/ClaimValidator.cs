@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Extensions;
 using ApplicationCore.Functions.Cover.Queries;
-using ApplicationCore.Interfaces;
 using FluentValidation;
 using MediatR;
 using WebAPI.DTOs;
