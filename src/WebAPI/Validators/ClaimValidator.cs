@@ -1,18 +1,19 @@
 ﻿using ApplicationCore.Extensions;
-using ApplicationCore.Interfaces;
+using ApplicationCore.Functions.Cover.Queries;
 using FluentValidation;
+using MediatR;
 using WebAPI.DTOs;
 
 namespace WebAPI.Validators;
 
 public class ClaimValidator : AbstractValidator<Claim>
 {
-    private readonly ICoverRepository _coverRepository;
+    private readonly IMediator _mediator;
     private const decimal MaxDamageCost = 100000;
 
-    public ClaimValidator(ICoverRepository coverRepository)
+    public ClaimValidator(IMediator mediator)
     {
-        _coverRepository = coverRepository;
+        _mediator = mediator;
         
         RuleFor(x => x.DamageCost)
             .LessThan(MaxDamageCost)
@@ -34,8 +35,7 @@ public class ClaimValidator : AbstractValidator<Claim>
                 RuleFor(x => new { x.CoverId, x.Created })
                     .CustomAsync(async (x, context, cancellationToken) =>
                     {
-
-                        var cover = await _coverRepository.GetItemAsync(x.CoverId);
+                        var cover = await _mediator.Send(new GetCoverByIdQuery(x.CoverId));
 
                         if (cover == null || cover == default)
                         {

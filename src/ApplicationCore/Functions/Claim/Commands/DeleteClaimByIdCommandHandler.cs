@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Functions.Claim.Notifications;
+﻿using ApplicationCore.Functions.Audit.Enums;
+using ApplicationCore.Functions.Audit.Notifications;
 using ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -25,6 +26,6 @@ public class DeleteClaimByIdCommandHandler : IRequestHandler<DeleteClaimByIdComm
     public async Task Handle(DeleteClaimByIdCommand request, CancellationToken cancellationToken)
     {
         await _claimRepository.DeleteItemAsync(request.Id);
-        await _mediator.Publish(new ClaimDeletedNotification(request.Id));
+        await _mediator.Publish(new AuditNotification(request.Id, EntityType.Claim, HttpMethod.Delete.ToString()));
     }
 }

@@ -19,4 +19,9 @@
       <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Interfaces\IAuditTypeSpecificStrategy.cs" />
+      <Compile Remove="Interfaces\BaseAuditTypeStrategiesFactory.cs" />
+    </ItemGroup>
+
 </Project>
