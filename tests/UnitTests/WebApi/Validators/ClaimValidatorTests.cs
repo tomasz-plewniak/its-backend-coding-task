@@ -1,7 +1,10 @@
-﻿using ApplicationCore.Interfaces;
+﻿using ApplicationCore.Functions.Cover.Queries;
+using ApplicationCore.Interfaces;
 using FluentAssertions;
 using FluentValidation.TestHelper;
+using MediatR;
 using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 using WebAPI.DTOs;
 using WebAPI.Validators;
 using Cover = ApplicationCore.Entities.Cover;
@@ -11,13 +14,12 @@ namespace UnitTests.WebApi.Validators;
 public class ClaimValidatorTests
 {
     private ClaimValidator _claimValidator;
-    private ICoverRepository _coverRepository;
+    private IMediator _mediator;
     
     public ClaimValidatorTests()
     {
-        _coverRepository = Substitute.For<ICoverRepository>();
-        
-        _claimValidator = new ClaimValidator(_coverRepository);    
+        _mediator = Substitute.For<IMediator>();
+        _claimValidator = new ClaimValidator(_mediator);    
     }
     
     [Theory]
@@ -35,7 +37,7 @@ public class ClaimValidatorTests
             CoverId = Guid.NewGuid().ToString()
         };
 
-        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        _mediator.Send(Arg.Any<GetCoverByIdQuery>()).Returns(new Cover()
         {
             Id = model.CoverId,
             StartDate = new DateOnly(2024, 01, 01),
@@ -61,7 +63,7 @@ public class ClaimValidatorTests
             CoverId = Guid.NewGuid().ToString()
         };
 
-        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        _mediator.Send(Arg.Any<GetCoverByIdQuery>()).Returns(new Cover()
         {
             Id = model.CoverId,
             StartDate = new DateOnly(2024, 01, 01),
@@ -82,7 +84,7 @@ public class ClaimValidatorTests
             CoverId = Guid.NewGuid().ToString()
         };
 
-        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        _mediator.Send(Arg.Any<GetCoverByIdQuery>()).Returns(new Cover()
         {
             Id = model.CoverId,
             StartDate = new DateOnly(2024, 01, 01),
@@ -103,7 +105,7 @@ public class ClaimValidatorTests
             CoverId = Guid.NewGuid().ToString()
         };
 
-        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        _mediator.Send(Arg.Any<GetCoverByIdQuery>()).Returns(new Cover()
         {
             Id = model.CoverId,
             StartDate = new DateOnly(2024, 01, 01),
@@ -124,7 +126,7 @@ public class ClaimValidatorTests
             CoverId = Guid.NewGuid().ToString()
         };
 
-        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        _mediator.Send(Arg.Any<GetCoverByIdQuery>()).Returns(new Cover()
         {
             Id = model.CoverId,
             StartDate = new DateOnly(2024, 01, 01),
@@ -145,7 +147,7 @@ public class ClaimValidatorTests
             CoverId = Guid.NewGuid().ToString()
         };
 
-        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        _mediator.Send(Arg.Any<GetCoverByIdQuery>()).Returns(new Cover()
         {
             Id = model.CoverId,
             StartDate = new DateOnly(2024, 01, 01),
@@ -179,8 +181,8 @@ public class ClaimValidatorTests
             Created = new DateTime(2025, 01, 01),
             CoverId = Guid.NewGuid().ToString()
         };
-
-        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns((Cover)null);
+        
+        _mediator.Send(Arg.Any<GetCoverByIdQuery>()).ReturnsNull();
         
         var result = await _claimValidator.TestValidateAsync(model);
         result.ShouldHaveValidationErrorFor(claim => claim.CoverId);
@@ -195,8 +197,8 @@ public class ClaimValidatorTests
             Created = new DateTime(2025, 01, 01),
             CoverId = Guid.NewGuid().ToString()
         };
-
-        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        
+        _mediator.Send(Arg.Any<GetCoverByIdQuery>()).Returns(new Cover()
         {
             Id = model.CoverId,
             StartDate = default,
@@ -217,7 +219,7 @@ public class ClaimValidatorTests
             CoverId = Guid.NewGuid().ToString()
         };
 
-        _coverRepository.GetItemAsync(Arg.Any<string>()).Returns(new Cover()
+        _mediator.Send(Arg.Any<GetCoverByIdQuery>()).Returns(new Cover()
         {
             Id = model.CoverId,
             StartDate = new DateOnly(2024, 01, 01),
