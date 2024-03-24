@@ -7,6 +7,4 @@ public record CalculatePremiumQuery(
     DateOnly StartDate,
     DateOnly EndDate,
     CoverType CoverType)
-    : IRequest<decimal>
-{
-}
+    : IRequest<decimal>;

@@ -2,6 +2,4 @@
 
 namespace ApplicationCore.Functions.Cover.Queries;
 
-public record GetAllCoversQuery : IRequest<IEnumerable<Entities.Cover>>
-{
-}
+public record GetAllCoversQuery : IRequest<IEnumerable<Entities.Cover>>;

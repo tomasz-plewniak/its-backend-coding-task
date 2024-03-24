@@ -3,6 +3,4 @@ using MediatR;
 
 namespace ApplicationCore.Functions.Audit.Notifications;
 
-public record AuditNotification(string Id, EntityType EntityType, string HttpMethod) : INotification
-{
-}
+public record AuditNotification(string Id, EntityType EntityType, string HttpMethod) : INotification;

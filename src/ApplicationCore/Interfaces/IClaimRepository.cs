@@ -2,6 +2,4 @@
 
 namespace ApplicationCore.Interfaces;
 
-public interface IClaimRepository : IGenericRepository<Claim>
-{
-}
+public interface IClaimRepository : IGenericRepository<Claim>;

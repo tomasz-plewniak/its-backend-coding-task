@@ -2,6 +2,4 @@
 
 namespace ApplicationCore.Functions.Cover.Commands;
 
-public record DeleteCoverByIdCommand(string Id) : IRequest
-{
-}
+public record DeleteCoverByIdCommand(string Id) : IRequest;
