@@ -1,18 +1,15 @@
 ﻿using ApplicationCore.Functions.Audit.Enums;
 using ApplicationCore.Interfaces;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Functions.Audit.Notifications;
 
 public class AuditNotificationHandler : INotificationHandler<AuditNotification>
 {
-    private readonly ILogger<AuditNotificationHandler> _logger;
     private readonly IAuditerService _service;
 
-    public AuditNotificationHandler(ILogger<AuditNotificationHandler> logger, IAuditerService service)
+    public AuditNotificationHandler(IAuditerService service)
     {
-        _logger = logger;
         _service = service;
     }
     
