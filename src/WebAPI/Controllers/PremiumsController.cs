@@ -18,6 +18,7 @@ public class PremiumsController : ControllerBase
     }
     
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<decimal>> ComputePremiumAsync(
         DateOnly startDate,
         DateOnly endDate,

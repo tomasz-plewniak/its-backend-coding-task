@@ -29,6 +29,7 @@ public class ClaimsController : ControllerBase
     }
 
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<Claim>>> GetAsync(CancellationToken cancellationToken = default)
     {
         var result = await _mediator.Send(new GetAllClaimsQuery(), cancellationToken);
@@ -37,6 +38,9 @@ public class ClaimsController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
     public async Task<ActionResult<Claim>> CreateAsync(Claim claim)
     {
         ValidationResult validationResult = await _claimValidator.ValidateAsync(claim);
@@ -60,6 +64,8 @@ public class ClaimsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Claim>> GetAsync(string id, CancellationToken cancellationToken = default)
     {
         var response = await _mediator.Send(new GetClaimByIdQuery(id), cancellationToken);
