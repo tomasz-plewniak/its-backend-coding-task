@@ -42,7 +42,7 @@ public class ClaimValidator : AbstractValidator<Claim>
 
                         if (cover.StartDate == default)
                         {
-                            context.AddFailure("StartDate cannot default");
+                            context.AddFailure("StartDate cannot be default");
                             return;
                         }
 

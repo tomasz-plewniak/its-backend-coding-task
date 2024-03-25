@@ -205,7 +205,7 @@ public class ClaimValidatorTests
         });
         
         var result = await _claimValidator.TestValidateAsync(model);
-        result.Errors.Should().Contain(e => e.ErrorMessage.Contains("StartDate cannot be null or default"));
+        result.Errors.Should().Contain(e => e.ErrorMessage.Contains("StartDate cannot be default"));
     }
     
     [Fact]
@@ -227,6 +227,6 @@ public class ClaimValidatorTests
         
         var result = await _claimValidator.TestValidateAsync(model);
         
-        result.Errors.Should().Contain(e => e.ErrorMessage.Contains("EndDate cannot be null or default"));
+        result.Errors.Should().Contain(e => e.ErrorMessage.Contains("EndDate cannot be default"));
     }
 }
