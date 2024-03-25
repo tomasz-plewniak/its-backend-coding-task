@@ -1,19 +1,17 @@
 ﻿using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
+using ApplicationCore.Options;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Options;
 
 namespace Infrastructure.CosmosDB;
 
 public class ClaimRepository : GenericRepository<Claim>, IClaimRepository
 {
-    private readonly Container _container;
-
-    public ClaimRepository(CosmosClient cosmosClient) : base(cosmosClient)
+    public ClaimRepository(
+        CosmosClient cosmosClient,
+        IOptions<CosmosDbOptions> options)
+        : base(cosmosClient.GetContainer(options.Value.DatabaseName, options.Value.ClaimContainerName))
     {
-        _container = cosmosClient.GetContainer(DatabaseId, ContainerId);
     }
-
-    public override string DatabaseId => "ClaimDb";
-    
-    public override string ContainerId => "Claim";
 }
