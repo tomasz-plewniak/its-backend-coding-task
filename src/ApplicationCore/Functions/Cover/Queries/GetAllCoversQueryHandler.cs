@@ -1,18 +1,14 @@
-﻿using ApplicationCore.Functions.Claim.Queries;
-using ApplicationCore.Interfaces;
+﻿using ApplicationCore.Interfaces;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Functions.Cover.Queries;
 
 public class GetAllCoversQueryHandler : IRequestHandler<GetAllCoversQuery, IEnumerable<Entities.Cover>>
 {
-    private readonly ILogger<GetAllClaimsQueryHandler> _logger;
     private readonly ICoverRepository _coverRepository;
 
-    public GetAllCoversQueryHandler(ILogger<GetAllClaimsQueryHandler> logger, ICoverRepository coverRepository)
+    public GetAllCoversQueryHandler(ICoverRepository coverRepository)
     {
-        _logger = logger;
         _coverRepository = coverRepository;
     }
     

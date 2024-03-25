@@ -2,22 +2,17 @@
 using ApplicationCore.Functions.Audit.Notifications;
 using ApplicationCore.Interfaces;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Functions.Claim.Commands;
 
 public class CreateClaimCommandHandler : IRequestHandler<CreateClaimCommand, Entities.Claim>
 {
-    private readonly ILogger<CreateClaimCommandHandler> _logger;
     private readonly IClaimRepository _claimRepository;
     private readonly IMediator _mediator;
 
-    public CreateClaimCommandHandler(
-        ILogger<CreateClaimCommandHandler> logger,
-        IClaimRepository claimRepository,
+    public CreateClaimCommandHandler(IClaimRepository claimRepository,
         IMediator mediator)
     {
-        _logger = logger;
         _claimRepository = claimRepository;
         _mediator = mediator;
     }

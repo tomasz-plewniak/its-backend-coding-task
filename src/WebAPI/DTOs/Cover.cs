@@ -2,7 +2,7 @@
 
 namespace WebAPI.DTOs;
 
-public class Cover : DTO
+public class Cover : Dto
 {
     public DateOnly StartDate { get; set; }
     

@@ -14,24 +14,22 @@ namespace WebAPI.Controllers;
 [Route("[controller]")]
 public class CoversController : ControllerBase
 {
-    private readonly ILogger<CoversController> _logger;
     private readonly IMapper _mapper;
     private readonly IValidator<Cover> _coverValidator;
     private readonly IMediator _mediator;
 
     public CoversController(
-        ILogger<CoversController> logger,
         IMapper mapper,
         IValidator<Cover> coverValidator,
         IMediator mediator)
     {
-        _logger = logger;
         _mapper = mapper;
         _coverValidator = coverValidator;
         _mediator = mediator;
     }
 
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<Cover>>> GetAsync(CancellationToken cancellationToken = default)
     {
         var results = await _mediator.Send(new GetAllCoversQuery(), cancellationToken);
@@ -40,9 +38,12 @@ public class CoversController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Cover>> GetAsync(string id, CancellationToken cancellationToken = default)
     {
         var response = await _mediator.Send(new GetCoverByIdQuery(id), cancellationToken);
+
         if (response == null)
         {
             return NotFound();
@@ -52,7 +53,9 @@ public class CoversController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateAsync(Cover cover)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Cover>> CreateAsync(Cover cover)
     {
         ValidationResult validationResult = await _coverValidator.ValidateAsync(cover);
 
@@ -68,6 +71,7 @@ public class CoversController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task DeleteAsync(string id)
     {
         await _mediator.Send(new DeleteCoverByIdCommand(id));

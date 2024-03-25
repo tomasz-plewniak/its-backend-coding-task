@@ -2,6 +2,4 @@
 
 namespace ApplicationCore.Interfaces;
 
-public interface ICoverRepository : IGenericRepository<Cover>
-{
-}
+public interface ICoverRepository : IGenericRepository<Cover>;

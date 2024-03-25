@@ -5,10 +5,6 @@ namespace ApplicationCore.Interfaces;
 public interface IGenericRepository<TEntity>
     where TEntity : Entity
 {
-    string DatabaseId { get; }
- 
-    string ContainerId { get; }
-    
     Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
     
     Task AddItemAsync(TEntity item);

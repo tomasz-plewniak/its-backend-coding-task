@@ -7,16 +7,11 @@ namespace Infrastructure.CosmosDB;
 public abstract class GenericRepository<TEntity> : IGenericRepository<TEntity>
     where TEntity : Entity
 {
-    private readonly CosmosClient _cosmosClient;
     private readonly Container _container;
-
-    public abstract string DatabaseId { get; }
-    public abstract string ContainerId { get; }
-
-    public GenericRepository(CosmosClient cosmosClient)
+    
+    public GenericRepository(Container container)
     {
-        _cosmosClient = cosmosClient;
-        _container = cosmosClient.GetContainer(DatabaseId, ContainerId);
+        _container = container;
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -42,7 +37,7 @@ public abstract class GenericRepository<TEntity> : IGenericRepository<TEntity>
         }
         catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
-            return null;
+            return null!;
         }
     }
     

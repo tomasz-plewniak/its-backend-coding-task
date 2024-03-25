@@ -7,12 +7,8 @@ namespace WebAPI.Validators;
 
 public class CoverValidator : AbstractValidator<Cover>
 {
-    private readonly IDateTimeService _dateTimeService;
-
     public CoverValidator(IDateTimeService dateTimeService)
     {
-        _dateTimeService = dateTimeService;
-        
         RuleFor(x => x.StartDate).GreaterThanOrEqualTo(dateTimeService.DateNow())
             .WithMessage("StartDate cannot be in the past");
         

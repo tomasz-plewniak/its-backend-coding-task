@@ -75,5 +75,22 @@ Desired logic:
 #### **Disclaimer**
 As you can see - a key is committed to the appsettings.json file. However, this is the common key for the Azure Cosmos Emulator, all instances uses the exact same value, so it is not a secret.
 
+#### **ToDo**
+Due to limited time for this assignment and keeping in mind that was round 8 hours, I provided some basic implementation and made some decisions. But I see also possible areas for improvements:
+* **Controllers:**
+  * Better error handling like create global exception middleware what will handle exceptions.
+  * Implementation of the pagination.
+  * Implementation of the simple cache.
 
+  
+* **Auditing**
 
+Due to limited time I chosen the MediatR function called notification.
+That was allowed me implement simplified version of requirement.
+But worth to mention that to truly achieve the goal I will choose use Azure Service Bus and Azure Function to save audit logs into database.
+
+* **Premium calculation**
+
+I was fixed the problem with calculation and perform some base refactor. 
+In case of having more time I will introduce strategy pattern by cover type.
+Thanks that each cover type will hand own file with specific calculation. This will drastically increase flexibility, testing and extending calculation logic by adding new type.

@@ -6,13 +6,13 @@ namespace ApplicationCore.Entities;
 public class Claim : Entity
 {
     [JsonProperty(PropertyName = "coverId")]
-    public string CoverId { get; set; }
+    public string CoverId { get; set; } = null!;
 
     [JsonProperty(PropertyName = "created")]
     public DateTime Created { get; set; }
 
     [JsonProperty(PropertyName = "name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     [JsonProperty(PropertyName = "claimType")]
     public ClaimType Type { get; set; }

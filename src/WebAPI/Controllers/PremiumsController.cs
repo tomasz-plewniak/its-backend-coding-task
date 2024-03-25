@@ -9,19 +9,17 @@ namespace WebAPI.Controllers;
 [Route("[controller]")]
 public class PremiumsController : ControllerBase
 {
-    private readonly ILogger<PremiumsController> _logger;
     private readonly IMediator _mediator;
 
     public PremiumsController(
-        ILogger<PremiumsController> logger,
         IMediator mediator)
     {
-        _logger = logger;
         _mediator = mediator;
     }
     
     [HttpGet]
-    public async Task<ActionResult> ComputePremiumAsync(
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<decimal>> ComputePremiumAsync(
         DateOnly startDate,
         DateOnly endDate,
         CoverType coverType,

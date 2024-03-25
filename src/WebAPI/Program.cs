@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using ApplicationCore;
+using ApplicationCore.Options;
 using FluentValidation;
 using Infrastructure;
 using Infrastructure.SQLDatabase;
@@ -17,6 +18,10 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<IValidator<Claim>, ClaimValidator>();
 builder.Services.AddScoped<IValidator<Cover>, CoverValidator>();
+
+builder.Services.Configure<CosmosDbOptions>(
+    builder.Configuration.GetSection(CosmosDbOptions.Section));
+
 
 builder.Services.AddControllers()
     .AddJsonOptions(x =>
@@ -51,4 +56,4 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
-public partial class Program { }
+public partial class Program;

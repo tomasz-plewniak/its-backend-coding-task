@@ -158,13 +158,13 @@ public class ClaimValidatorTests
     }
     
     [Fact]
-    public async Task ShouldHaveError_WhenCoverIdIsNull()
+    public async Task ShouldHaveError_WhenCoverIdIsEmptyString()
     {
         var model = new Claim()
         {
             DamageCost = 10000,
             Created = new DateTime(2025, 01, 01),
-            CoverId = null
+            CoverId = String.Empty,
         };
         
         var result = await _claimValidator.TestValidateAsync(model);
@@ -205,7 +205,7 @@ public class ClaimValidatorTests
         });
         
         var result = await _claimValidator.TestValidateAsync(model);
-        result.Errors.Should().Contain(e => e.ErrorMessage.Contains("StartDate cannot be null or default"));
+        result.Errors.Should().Contain(e => e.ErrorMessage.Contains("StartDate cannot be default"));
     }
     
     [Fact]
@@ -227,6 +227,6 @@ public class ClaimValidatorTests
         
         var result = await _claimValidator.TestValidateAsync(model);
         
-        result.Errors.Should().Contain(e => e.ErrorMessage.Contains("EndDate cannot be null or default"));
+        result.Errors.Should().Contain(e => e.ErrorMessage.Contains("EndDate cannot be default"));
     }
 }
