@@ -8,13 +8,10 @@ namespace WebAPI.Validators;
 
 public class ClaimValidator : AbstractValidator<Claim>
 {
-    private readonly IMediator _mediator;
     private const decimal MaxDamageCost = 100000;
 
     public ClaimValidator(IMediator mediator)
     {
-        _mediator = mediator;
-        
         RuleFor(x => x.DamageCost)
             .LessThan(MaxDamageCost)
             .WithMessage($"DamageCost cannot exceed {MaxDamageCost}");
@@ -35,23 +32,23 @@ public class ClaimValidator : AbstractValidator<Claim>
                 RuleFor(x => new { x.CoverId, x.Created })
                     .CustomAsync(async (x, context, cancellationToken) =>
                     {
-                        var cover = await _mediator.Send(new GetCoverByIdQuery(x.CoverId));
-
-                        if (cover == null || cover == default)
+                        var cover = await mediator.Send(new GetCoverByIdQuery(x.CoverId), cancellationToken);
+                        
+                        if (cover == null)
                         {
                             context.AddFailure(nameof(Claim.CoverId),"Not found any cover with this CoverId");
                             return;
                         }
 
-                        if (cover.StartDate == null || cover.StartDate == default)
+                        if (cover.StartDate == default)
                         {
-                            context.AddFailure("StartDate cannot be null or default");
+                            context.AddFailure("StartDate cannot default");
                             return;
                         }
 
-                        if (cover.EndDate == null || cover.EndDate == default)
+                        if (cover.EndDate == default)
                         {
-                            context.AddFailure("EndDate cannot be null or default");
+                            context.AddFailure("EndDate cannot be default");
                             return;
                         }
 

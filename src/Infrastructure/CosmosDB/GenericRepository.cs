@@ -37,7 +37,7 @@ public abstract class GenericRepository<TEntity> : IGenericRepository<TEntity>
         }
         catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
-            return null;
+            return null!;
         }
     }
     

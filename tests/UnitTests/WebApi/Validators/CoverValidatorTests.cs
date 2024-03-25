@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Interfaces;
-using ApplicationCore.Services;
 using FluentAssertions;
 using FluentValidation.TestHelper;
 using NSubstitute;
@@ -10,14 +9,14 @@ namespace UnitTests.WebApi.Validators;
 
 public class CoverValidatorTests
 {
-    private static readonly DateOnly _currentDateMock = new(2024, 01, 01);
+    private static readonly DateOnly CurrentDateMock = new(2024, 01, 01);
     
-    private CoverValidator _coverValidator;
+    private readonly CoverValidator _coverValidator;
     
     public CoverValidatorTests()
     {
         IDateTimeService dateTimeService = Substitute.For<IDateTimeService>();
-        dateTimeService.DateNow().Returns(_currentDateMock);
+        dateTimeService.DateNow().Returns(CurrentDateMock);
         
         _coverValidator = new CoverValidator(dateTimeService);    
     }
@@ -58,8 +57,6 @@ public class CoverValidatorTests
     {
         var model = new Cover() { StartDate = startDate, EndDate = endDate };
 
-        var dateTimeService = new DateTimeService();
-        
         var result = _coverValidator.TestValidate(model);
         result.Errors.Should().NotContain(
             x => x.PropertyName == "StartDate and EndDate" 
@@ -68,20 +65,20 @@ public class CoverValidatorTests
     
     public static IEnumerable<object[]> PastDatesFromDataGenerator()
     {
-        yield return new object[] { _currentDateMock.AddDays(-1) };
-        yield return new object[] { _currentDateMock.AddDays(-10) };
-        yield return new object[] { _currentDateMock.AddDays(-100) };
-        yield return new object[] { _currentDateMock.AddDays(-1000) };
-        yield return new object[] { _currentDateMock.AddDays(-10000) };
+        yield return new object[] { CurrentDateMock.AddDays(-1) };
+        yield return new object[] { CurrentDateMock.AddDays(-10) };
+        yield return new object[] { CurrentDateMock.AddDays(-100) };
+        yield return new object[] { CurrentDateMock.AddDays(-1000) };
+        yield return new object[] { CurrentDateMock.AddDays(-10000) };
     }
     
     public static IEnumerable<object[]> FutureDatesFromDataGenerator()
     {
-        yield return new object[] { _currentDateMock };
-        yield return new object[] { _currentDateMock.AddDays(1) };
-        yield return new object[] { _currentDateMock.AddDays(10) };
-        yield return new object[] { _currentDateMock.AddDays(100) };
-        yield return new object[] { _currentDateMock.AddDays(200) };
+        yield return new object[] { CurrentDateMock };
+        yield return new object[] { CurrentDateMock.AddDays(1) };
+        yield return new object[] { CurrentDateMock.AddDays(10) };
+        yield return new object[] { CurrentDateMock.AddDays(100) };
+        yield return new object[] { CurrentDateMock.AddDays(200) };
     }
     
     public static IEnumerable<object[]> OneYearExceededFromDataGenerator()

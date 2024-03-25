@@ -14,6 +14,6 @@ public class CalculatePremiumQueryHandler : IRequestHandler<CalculatePremiumQuer
     
     public async Task<decimal> Handle(CalculatePremiumQuery request, CancellationToken cancellationToken)
     {
-        return _calculatePremiumService.ComputePremium(request.StartDate, request.EndDate, request.CoverType);
+        return await Task.FromResult(_calculatePremiumService.ComputePremium(request.StartDate, request.EndDate, request.CoverType));
     }
 }

@@ -2,13 +2,13 @@
 
 namespace WebAPI.DTOs;
 
-public class Claim : DTO
+public class Claim : Dto
 {
-    public string CoverId { get; set; }
+    public string CoverId { get; set; } = null!;
 
     public DateTime Created { get; set; }
 
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     public ClaimType Type { get; set; }
     

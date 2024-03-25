@@ -14,34 +14,30 @@ namespace WebAPI.Controllers;
 [Route("[controller]")]
 public class ClaimsController : ControllerBase
 {
-
-    private readonly ILogger<ClaimsController> _logger;
     private readonly IMapper _mapper;
     private readonly IValidator<Claim> _claimValidator;
     private readonly IMediator _mediator;
 
     public ClaimsController(
-        ILogger<ClaimsController> logger,
         IMapper mapper,
         IValidator<Claim> claimValidator,
         IMediator mediator)
     {
-        _logger = logger;
         _mapper = mapper;
         _claimValidator = claimValidator;
         _mediator = mediator;
     }
 
     [HttpGet]
-    public async Task<IEnumerable<Claim>> GetAsync(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<Claim>>> GetAsync(CancellationToken cancellationToken = default)
     {
         var result = await _mediator.Send(new GetAllClaimsQuery(), cancellationToken);
 
-        return _mapper.Map<IEnumerable<Claim>>(result);
+        return Ok(_mapper.Map<IEnumerable<Claim>>(result));
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateAsync(Claim claim)
+    public async Task<ActionResult<Claim>> CreateAsync(Claim claim)
     {
         ValidationResult validationResult = await _claimValidator.ValidateAsync(claim);
 
@@ -64,10 +60,14 @@ public class ClaimsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<Claim> GetAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<Claim>> GetAsync(string id, CancellationToken cancellationToken = default)
     {
-        var result = await _mediator.Send(new GetClaimByIdQuery(id), cancellationToken);
-
-        return _mapper.Map<Claim>(result);
+        var response = await _mediator.Send(new GetClaimByIdQuery(id), cancellationToken);
+        if (response == null)
+        {
+            return NotFound();
+        }
+        
+        return Ok(_mapper.Map<Claim>(response));
     }
 }
