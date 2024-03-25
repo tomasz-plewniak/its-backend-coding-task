@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Interfaces;
+using ApplicationCore.Options;
 using Infrastructure.CosmosDB;
 using Infrastructure.SQLDatabase;
 using Microsoft.Azure.Cosmos;
@@ -10,14 +11,8 @@ namespace Infrastructure;
 
 public static class ConfigureServices
 {
-    private const string CosmosDbSection = "CosmosDb";
     private const string DefaultConnection = "DefaultConnection";
-    private const string Account = "Account";
-    private const string Key = "Key";
-    
-    private const string DatabaseId = "ClaimDb";
-    private const string ClaimContainerName = "Claim";
-    private const string CoverContainerName = "Cover";
+
     private const string PartitionKey = "/id";
     
     public static IServiceCollection AddInfrastructureServices(
@@ -25,7 +20,7 @@ public static class ConfigureServices
         IConfiguration configuration)
     {
         services.AddSingleton(
-            InitializeCosmosClientInstanceAsync(configuration.GetSection(CosmosDbSection)).GetAwaiter().GetResult());
+            InitializeCosmosClientInstanceAsync(configuration.GetSection(CosmosDbOptions.Section)).GetAwaiter().GetResult());
         
         services.AddDbContext<AuditContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString(DefaultConnection),
@@ -43,14 +38,15 @@ public static class ConfigureServices
     
     static async Task<CosmosClient> InitializeCosmosClientInstanceAsync(IConfigurationSection configurationSection)
     {
-        string account = configurationSection.GetSection(Account).Value;
-        string key = configurationSection.GetSection(Key).Value;
+        CosmosDbOptions cosmosDbOptions = new();
+        configurationSection.Bind(cosmosDbOptions);
         
-        var client = new CosmosClient(account, key);
+        var client = new CosmosClient(cosmosDbOptions.Account, cosmosDbOptions.Key);
         
-        var database = await client.CreateDatabaseIfNotExistsAsync(DatabaseId);
-        await database.Database.CreateContainerIfNotExistsAsync(ClaimContainerName, PartitionKey);
-        await database.Database.CreateContainerIfNotExistsAsync(CoverContainerName, PartitionKey);
+        var database = await client.CreateDatabaseIfNotExistsAsync(cosmosDbOptions.DatabaseName);
+        
+        await database.Database.CreateContainerIfNotExistsAsync(cosmosDbOptions.ClaimContainerName, PartitionKey);
+        await database.Database.CreateContainerIfNotExistsAsync(cosmosDbOptions.CoverContainerName, PartitionKey);
 
         return client;
     }
